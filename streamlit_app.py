@@ -3,27 +3,28 @@ from langchain.llms import OpenAI
 from langchain import PromptTemplate
 import pandas as pd
 
+# Set the page title
 st.set_page_config(page_title="🦜🔗 Clinical Note Generator App")
 st.title('🦜🔗 Clinical Note Generator App')
 
+# Get the OpenAI API Key from the sidebar
 openai_api_key = st.sidebar.text_input('OpenAI API Key', type='password')
 
-# Define the PromptTemplate from the provided script
-template = """Write a clinical note reflecting this doctor-patient dialogue. 
-Use the example notes below to decide the structure of the clinical note. 
-Do not make up information.
+# Define a simplified template
+template = """
+Generate a clinical note using these examples:
 {examples}
 
-DIALOGUE: {dialogue}
+For dialogue: {dialogue}
 CLINICAL NOTE:
 """
 prompt = PromptTemplate(input_variables=['examples', 'dialogue'], template=template)
 
-# Load the in-context examples from the fixed Excel file xsafag
+# Load the in-context examples from the fixed Excel file
 df = pd.read_csv('examples.csv')
-# Assuming the examples are in a column named 'note'
-examples_list = df['note'].tolist()
-examples = "\n".join([f"EXAMPLE NOTE:\n{example.strip()}" for example in examples_list])
+# Assuming the examples are in a column named 'note', take only top 4 to reduce token count
+examples_list = df['note'].tolist()[:4]  
+examples = "\n".join([f"NOTE:\n{example.strip()}" for example in examples_list])
 
 def generate_response(dialogue, examples=examples):
     llm = OpenAI(model_name='text-davinci-003', openai_api_key=openai_api_key)
@@ -40,5 +41,3 @@ with st.form('myform'):
     if submitted and openai_api_key.startswith('sk-'):
         response = generate_response(dialogue_text)
         st.info(response)
-
-print
