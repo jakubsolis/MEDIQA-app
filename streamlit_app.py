@@ -3,14 +3,19 @@ from langchain.llms import OpenAI
 from langchain import PromptTemplate
 import pandas as pd
 import openai
+from tiktoken import Tokenizer
 
 # Set the page title
 st.set_page_config(page_title="🦜🔗 Clinical Note Generator App")
 st.title('🦜🔗 Clinical Note Generator App')
 
+# Initialize the tokenizer
+tokenizer = Tokenizer()
+
 # Get the OpenAI API Key from the sidebar
 openai_api_key = st.sidebar.text_input('OpenAI API Key', type='password')
 openai.api_key = openai_api_key
+
 # Define a simplified template
 template = """
 Generate a clinical note using these examples:
@@ -25,12 +30,16 @@ prompt = PromptTemplate(input_variables=['examples', 'dialogue'], template=templ
 df = pd.read_csv('examples.csv')
 examples_list = df['note'].tolist()
 
+def count_tokens(text):
+    return len(list(tokenizer.tokenize(text)))
+
 def construct_prompt(dialogue, examples_list):
     constructed_examples = ""
     for example in examples_list:
         temp_prompt = template.format(examples=constructed_examples + "\nNOTE:\n" + example, dialogue=dialogue)
-        # Checking token count without invoking the API. This is a rough estimate, and can vary based on model specifics.
-        if len(openai.Completion.create(model="text-davinci-003", prompt=temp_prompt, max_tokens=0).choices[0]['usage']['total_tokens']) <= 4097:
+        
+        # Using tiktoken to get the token count
+        if count_tokens(temp_prompt) <= 4097:
             constructed_examples += "\nNOTE:\n" + example
         else:
             break
