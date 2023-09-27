@@ -3,11 +3,15 @@ from langchain.llms import OpenAI
 from langchain import PromptTemplate
 import pandas as pd
 import openai
-from tiktoken import Tokenizer, tokenizers
+from tiktoken import TokenCount
+from openai import GPT2Tokenizer
 
-# Set up the GPT tokenizer
-with open(openai.api_key_path) as f:
-    tokenizer = Tokenizer(tokenizers.ByteLevelBPETokenizer(data=f))
+# Initialize the GPT-2 tokenizer
+tokenizer = GPT2Tokenizer()
+
+def count_tokens(text):
+    token_count = TokenCount.from_string(tokenizer, text)
+    return token_count.n_tokens
 
 # Set the page title
 st.set_page_config(page_title="🦜🔗 Clinical Note Generator App")
@@ -37,7 +41,7 @@ def construct_prompt(dialogue, examples_list):
         temp_prompt = template.format(examples=constructed_examples + "\nNOTE:\n" + example, dialogue=dialogue)
         
         # Calculate the token count
-        token_count = len(tokenizer.encode(temp_prompt))
+        token_count = count_tokens(temp_prompt)
         
         if token_count <= 4096:  # assuming the limit is 4096 tokens
             constructed_examples += "\nNOTE:\n" + example
