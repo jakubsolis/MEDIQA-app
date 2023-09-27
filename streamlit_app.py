@@ -19,8 +19,8 @@ CLINICAL NOTE:
 """
 prompt = PromptTemplate(input_variables=['examples', 'dialogue'], template=template)
 
-# Load the in-context examples from the fixed Excel file
-df = pd.read_excel('examples.csv')
+# Load the in-context examples from the fixed Excel file xsafag
+df = pd.read_csv('examples.csv')
 # Assuming the examples are in a column named 'note'
 examples_list = df['note'].tolist()
 examples = "\n".join([f"EXAMPLE NOTE:\n{example.strip()}" for example in examples_list])
@@ -41,3 +41,4 @@ with st.form('myform'):
         response = generate_response(dialogue_text)
         st.info(response)
 
+print
