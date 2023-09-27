@@ -4,7 +4,7 @@ from langchain import PromptTemplate
 import pandas as pd
 import openai
 from tiktoken import TokenCount
-from openai import GPT2Tokenizer
+from openai import GPT4Tokenizer
 
 # Initialize the GPT-2 tokenizer
 # Initialize the tokenizer
