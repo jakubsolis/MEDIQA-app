@@ -3,10 +3,9 @@ from langchain.llms import OpenAI
 from langchain import PromptTemplate
 import pandas as pd
 import openai
-from tiktoken import TokenCount
+from tiktoken import Tiktoken
 from openai import GPT4Tokenizer
 
-# Initialize the GPT-2 tokenizer
 # Initialize the tokenizer
 tokenizer = Tiktoken(GPT4Tokenizer())
 
