@@ -3,14 +3,15 @@ from langchain.llms import OpenAI
 from langchain import PromptTemplate
 import pandas as pd
 import openai
-from tiktoken import Tokenizer
+from tiktoken import Tokenizer, tokenizers
+
+# Set up the GPT tokenizer
+with open(openai.api_key_path) as f:
+    tokenizer = Tokenizer(tokenizers.ByteLevelBPETokenizer(data=f))
 
 # Set the page title
 st.set_page_config(page_title="🦜🔗 Clinical Note Generator App")
 st.title('🦜🔗 Clinical Note Generator App')
-
-# Initialize the tokenizer
-tokenizer = Tokenizer()
 
 # Get the OpenAI API Key from the sidebar
 openai_api_key = st.sidebar.text_input('OpenAI API Key', type='password')
@@ -30,16 +31,15 @@ prompt = PromptTemplate(input_variables=['examples', 'dialogue'], template=templ
 df = pd.read_csv('examples.csv')
 examples_list = df['note'].tolist()
 
-def count_tokens(text):
-    return len(list(tokenizer.tokenize(text)))
-
 def construct_prompt(dialogue, examples_list):
     constructed_examples = ""
     for example in examples_list:
         temp_prompt = template.format(examples=constructed_examples + "\nNOTE:\n" + example, dialogue=dialogue)
         
-        # Using tiktoken to get the token count
-        if count_tokens(temp_prompt) <= 4097:
+        # Calculate the token count
+        token_count = len(tokenizer.encode(temp_prompt))
+        
+        if token_count <= 4096:  # assuming the limit is 4096 tokens
             constructed_examples += "\nNOTE:\n" + example
         else:
             break
