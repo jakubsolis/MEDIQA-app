@@ -10,7 +10,7 @@ st.title('🦜🔗 Clinical Note Generator App')
 
 # Get the OpenAI API Key from the sidebar
 openai_api_key = st.sidebar.text_input('OpenAI API Key', type='password')
-
+openai.api_key = openai_api_key
 # Define a simplified template
 template = """
 Generate a clinical note using these examples:
