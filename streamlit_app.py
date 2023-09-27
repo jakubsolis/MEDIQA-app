@@ -7,12 +7,11 @@ from tiktoken import TokenCount
 from openai import GPT2Tokenizer
 
 # Initialize the GPT-2 tokenizer
-tokenizer = GPT2Tokenizer()
+# Initialize the tokenizer
+tokenizer = Tiktoken(GPT4Tokenizer())
 
 def count_tokens(text):
-    token_count = TokenCount.from_string(tokenizer, text)
-    return token_count.n_tokens
-
+    return len(list(tokenizer.tokenize(text)))
 # Set the page title
 st.set_page_config(page_title="🦜🔗 Clinical Note Generator App")
 st.title('🦜🔗 Clinical Note Generator App')
